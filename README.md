@@ -28,5 +28,10 @@ tráfico entre PCs cruza Internet con NAT.
 ├── ryu-flows.sh        # inyección automática de reglas vía REST
 ```
 
+Instalación rápida del servicio "corpcpe" para site 1:
 
-
+```
+cd tf
+terraform init
+terraform apply --var-file=dev1.tfvars
+```

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OVAFILE='RDSV-K8S-2024-2.ova'
+OVAFILE='RDSV-K8S-2024-v2.ova'
 LABDIR=/lab/rdsv/repo
 VMNAME='RDSV-K8S-2024-v2'
 STARTCMD="vboxmanage startvm $VMNAME"
@@ -49,7 +49,7 @@ else
     echo "--"
     echo "-- ERROR: not found /mnt/tmp/$OVAFILE"
     echo "--"
-    echo "--      Use: wget http://idefix.dit.upm.es/download/vnx/vm/$OVAFILE -o /mnt/tmp/$OVAFILE"
+    echo "--      Use: wget http://idefix.dit.upm.es/download/vnx/vm/$OVAFILE -O /mnt/tmp/$OVAFILE"
     echo "--"
     echo "--      Then execute this script again."
     echo "--"
