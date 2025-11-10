@@ -41,7 +41,7 @@ for EDGE_DIR in "${EDGE_DIRS[@]}"; do
   echo -e "\n═══════════════  Cargando reglas en ${SITE}  ═══════════════"
 
   ######## 1) Esperar a que el Pod Ryu esté Ready ############
-  echo "⏳ Esperando Pod Ryu (${APP_LABEL})..."
+  echo "...Esperando Pod Ryu (${APP_LABEL})..."
   $KCTL wait --for=condition=ready pod -l "k8s-app=${APP_LABEL}" \
       -n "$NAMESPACE" --timeout=120s
 

@@ -12,7 +12,7 @@ Servicios SD-WAN en centrales de proximidad
     - [1.1.alt Instalación y arranque de la máquina virtual en equipo propio](#11alt-instalación-y-arranque-de-la-máquina-virtual-en-equipo-propio)
     - [1.2 Preparación del entorno](#12-preparación-del-entorno)
   - [2. Arranque del escenario de red](#2-arranque-del-escenario-de-red)
-  - [4. Servicio de red *corpcpe*](#4-servicio-de-red-corpcpe)
+  - [3. Servicio de red *corpcpe*](#3-servicio-de-red-corpcpe)
     - [4.1 (P) Imágenes vnf-access y vnf-cpe](#41-p-imágenes-vnf-access-y-vnf-cpe)
     - [4.2 Instanciación de corpcpe1](#42-instanciación-de-corpcpe1)
     - [4.3 (P) Análisis de las conexiones a redes externas y configuración](#43-p-análisis-de-las-conexiones-a-redes-externas-y-configuración)
@@ -74,7 +74,7 @@ Como Virtualized Infrastructure Manager (VIM) se va a utilizar un clúster
 de Kubernetes, que permite el despliegue de VNFs como contenedores,
 habitualmente denominados KNFs.
 
-![Arquitectura del entorno](img/helm-k8s-ref-arch.drawio.png "Arquitectura del
+![Arquitectura del entorno](img/tf-k8s-ref-arch.drawio.png "Arquitectura del
 entorno")
 
 *Figura 2. Arquitectura del entorno*
@@ -82,22 +82,29 @@ entorno")
 Kubernetes es una plataforma de código libre diseñada para el despliegue de
 aplicaciones basadas en contenedores. Proporciona múltiples funciones de
 escalabilidad, resistencia a fallos, actualizaciones y regresiones progresivas,
-etc. que la hacen muy adecuada para el despliegue de VNFs. Kubernetes incluye su
-propio gestor de paquetes, denominado Helm, que define la forma de crear y
-operar repositorios en los que se almacenan los denominados Charts (paquetes en
-terminología Helm). Básicamente, un Chart define un conjunto de recursos de
-Kubernetes (contenedores, balanceadores, etc.) que se pueden posteriormente
-desplegar sobre un clúster de Kubernetes. Adicionalmente, las imágenes de los
+etc. que la hacen muy adecuada para el despliegue de VNFs. Las imágenes de los
 contenedores usados por Kubernetes suelen almacenarse en repositorios privados
-o, más comúnmente, en el repositorio oficial de Docker denominado DockerHub.  
+o, más comúnmente, en repositorios públicos como DockerHub, el repositorio
+oficial de Docker. Terraform es un software de infraestructura como código
+(Infrastructure as Code o IaC) desarrollado por HashiCorp. Permite a los
+usuarios definir y configurar la infraestructura de un centro de datos en un
+lenguaje de alto nivel, siguiendo los principios de automatización de recursos
+según las metodologías de Integración y Despliegue Continuos (Continuous
+Integration / Continuous Delivery o CI/CD), generando un plan de ejecución para
+desplegar los recursos en distintos proveedores de servicios. En este caso se
+usará para desplegar servicios en Kubernetes. La infraestructura se define
+utilizando la sintaxis de configuración de HashiCorp denominada HashiCorp
+Configuration Language (HCL) o, en su defecto, el formato JSON. El formato HCL
+es más legible, admite comentarios y es el más recomendado para la mayoría de
+los archivos de configuración de Terraform.
 
-En la Figura 3 se aprecia con más detalle la relación entre las distintas
-plataformas y repositorios involucrados en la práctica, que consistirá en el
+En la Figura 3 se aprecia con más detalle la relación entre los principales 
+ficheros de configuración de Terraform y las imágenes de contenedores que 
+se utilizarán en la práctica,  que consistirá en el
 despliegue de un servicio de red _sdedge_ compuesto por tres VNFs
-interconectadas a través de una red virtual. Para desplegar dicho servicio se
-proporcionan un conjunto de scripts en bash. 
+interconectadas a través de una red virtual. 
 
-![Relaciones del entorno](img/helm-docker.drawio.png "Relación entre
+![Relaciones del entorno](img/tf-docker.drawio.png "Relación entre
 plataformas y repositorios")
 
 *Figura 3. Relación entre plataformas y repositorios*
@@ -178,7 +185,7 @@ repositorio de la práctica:
 ```
 mkdir -p ~/shared
 cd ~/shared
-git clone https://github.com/educaredes/sdedge-ns.git
+git clone https://github.com/educaredes/terraform-sdwan.git
 cd sdedge-ns
 ```
 
@@ -193,7 +200,7 @@ El comando `bin/get-sdwlab-k8s`:
 - instala la ova que contiene la máquina virtual,
 - añade el directorio compartido en la máquina virtual, en `/home/upm/shared`.
 El objetivo es que esa carpeta compartida sea accesible tanto en el PC anfitrión
-como en la máquina virtual _RDSV-K8S-2024-v1_. 
+como en la máquina virtual _RDSV-K8S-2024-2_. 
 
 Arranque la máquina virtual, abra un terminal, y compruebe que puede acceder a 
 la carpeta compartida `~/shared` en la que ha descargado el repositorio de la 
@@ -211,8 +218,8 @@ repositorio de la práctica:
 
 ```
 cd ~/shared
-git clone https://github.com/educaredes/sdedge-ns.git
-cd sdedge-ns
+git clone https://github.com/educaredes/terraform-sdwan.git
+cd terraform-sdwan
 ```
 
 ### 1.2 Preparación del entorno
@@ -220,7 +227,7 @@ cd sdedge-ns
 Ejecute los comandos:
 
 ```shell
-cd ~/shared/sdedge-ns/bin
+cd ~/shared/terraform-sdwan/bin
 ./prepare-k8slab   # creates namespace and network resources
 ```
 
@@ -272,7 +279,7 @@ en su LAN local 10.20.1.0/24 entre h1, t1 y r1. Compruebe también que hay
 conectividad entre isp1, isp2 y s1 a través del segmento Internet 10.100.3.0/24.
 También puede comprobar desde s1 el acceso a 8.8.8.8.
 
-## 4. Servicio de red *corpcpe*
+## 3. Servicio de red *corpcpe*
 
 Comenzaremos a continuación analizando el servicio de acceso a Internet
 corporativo *corpcpe*. La Figura 5 muestra los detalles de ese servicio. En
@@ -305,7 +312,7 @@ https://hub.docker.com/search?q=educaredes. Se van a analizar los ficheros
 utilizados para la creación de esas imágenes: 
 
 Desde el navegador de archivos en _~/shared/sdedge-ns_, acceda a las carpetas
-_img/vnf-access_ y _vnf-cpe_. Observe que cada una de ellas contiene:
+_img/vnf-access_ y _img/vnf-cpe_. Observe que cada una de ellas contiene:
 
 * un fichero de texto _Dockerfile_ con la configuración necesaria para crear la
   imagen del contenedor, 

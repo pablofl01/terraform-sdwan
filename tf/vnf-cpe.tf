@@ -32,7 +32,7 @@ resource "kubernetes_pod" "vnf_cpe" {
         <<-EOT
           set -e -x
           /usr/share/openvswitch/scripts/ovs-ctl start
-          while [ ! -e /var/run/openvswitch/db.sock ]; do echo '⏳ Esperando OVS…'; sleep 1; done
+          while [ ! -e /var/run/openvswitch/db.sock ]; do echo '...Esperando OVS…'; sleep 1; done
 
           ################################ [1] Resolver ACCESS
           while true; do
