@@ -270,7 +270,7 @@ kubectl get -n $SDWNS network-attachment-definitions
 A continuación arranque el escenario con:
 
 ```shell
-cd ~/shared/sdedge-ns/vnx
+cd ~/shared/terraform-sdwan/vnx
 sudo vnx -f sdedge_nfv.xml -t
 ```
 
@@ -311,7 +311,7 @@ Docker Hub, en concreto en el repositorio
 https://hub.docker.com/search?q=educaredes. Se van a analizar los ficheros
 utilizados para la creación de esas imágenes: 
 
-Desde el navegador de archivos en _~/shared/sdedge-ns_, acceda a las carpetas
+Desde el navegador de archivos en _~/shared/terraform-sdwan_, acceda a las carpetas
 _img/vnf-access_ y _img/vnf-cpe_. Observe que cada una de ellas contiene:
 
 * un fichero de texto _Dockerfile_ con la configuración necesaria para crear la
@@ -361,14 +361,6 @@ directamente a través de una plataforma de orquestación. En este caso, se han
 realizado mediante Terraform, como una secuencia de comandos que deben
 ejecutarse al arrancar cada contenedor. Los ficheros _vnf-access.tf_ y
 _vnf-cpe.tf_ incluyen las configuraciones necesarias del servicio. 
-
-
-```shell
-cat cpe1.sh
-```
-
-Acceda también al contenido de los ficheros *k8s_corpcpe_start.sh* y
-*start_corpcpe.sh* que se invocan desde _cpe1.sh_.
 
 
 :point_right: Acceda mediante VS Code a la secuencia de comandos de los ficheros
@@ -542,7 +534,7 @@ SD-WAN.
 
 *Figura 7. Servicio de red sdedge configurado para SD-WAN*
 
-Acceda al contenido del fichero `vnf-wan.tf.openflow` así como al contenido del
+Acceda al contenido del fichero `vnf-wan.tf.openflow_sw` así como al contenido del
 fichero `ryu-flows.sh` y la carpeta `json`. 
 
 :point_right: A partir de la figura, del contenido del fichero de configuración
@@ -620,13 +612,13 @@ y sus sugerencias.
 Si $POD contiene el identificador del pod, ejecuta un `<comando>` en un pod:
 
 ```
-kubectl  -n $SDWNS exec -it $POD -- <comando>
+kubectl -n $SDWNS exec -it $POD -- <comando>
 ```
 
 Abre una shell en un pod:
 
 ```
-kubectl  -n $SDWNS exec -it $POD -- /bin/sh
+kubectl -n $SDWNS exec -it $POD -- /bin/sh
 ```
 
 Arranca consolas de KNFs:
